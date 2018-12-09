@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-15-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-15-0 http://www.eiffel.com/developers/xml/configuration-1-15-0.xsd" name="demo_stored" uuid="2DD618B5-CCDC-456C-B923-596FFCB170CE">
+	<target name="demo_stored">
+		<root class="DEMO" feature="execute_all"/>
+		<option warning="true" is_obsolete_routine_type="true" void_safety="all" syntax="standard">
+			<assertions precondition="true" postcondition="true" check="true" loop="true" supplier_precondition="true"/>
+		</option>
+		<setting name="console_application" value="true"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf" readonly="true">
+			<option>
+				<assertions precondition="true" postcondition="true" check="true"/>
+			</option>
+		</library>
+		<library name="mysql" location="$ISE_LIBRARY\library\store\dbms\rdbms\mysql\mysql-safe.ecf"/>
+		<library name="store" location="$ISE_LIBRARY\library\store\store-safe.ecf"/>
+		<cluster name="common" location="..\common\" recursive="true"/>
+		<cluster name="demo" location=".\">
+			<file_rule>
+				<exclude>/.svn$</exclude>
+				<exclude>/CVS$</exclude>
+				<exclude>/EIFGENs$</exclude>
+				<exclude>/persistence_base$</exclude>
+			</file_rule>
+		</cluster>
+	</target>
+</system>

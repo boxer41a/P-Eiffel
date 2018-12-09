@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-13-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-13-0 http://www.eiffel.com/developers/xml/configuration-1-13-0.xsd" name="sha_demo" uuid="35F5E5A7-A4DA-4F7E-B494-F098C30BA32B">
+	<target name="sha_1_only_demo">
+		<root class="SHA_DEMO" feature="make"/>
+		<option profile="false" warning="true" cat_call_detection="false" void_safety="all" syntax="standard">
+			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
+		</option>
+		<setting name="console_application" value="true"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf" readonly="false">
+			<option>
+				<assertions precondition="true"/>
+			</option>
+		</library>
+		<library name="testing" location="$ISE_LIBRARY\library\testing\testing-safe.ecf">
+			<option>
+				<assertions precondition="true"/>
+			</option>
+		</library>
+		<cluster name="jj_sha_1_only" location="..\">
+			<cluster name="interface" location="..\interface\" recursive="true"/>
+			<cluster name="support" location="..\support\" recursive="true"/>
+		</cluster>
+		<cluster name="sha_1_only_demo" location=".\" recursive="true">
+			<file_rule>
+				<exclude>/EIFGENs$</exclude>
+				<exclude>/CVS$</exclude>
+				<exclude>/.svn$</exclude>
+			</file_rule>
+		</cluster>
+	</target>
+</system>

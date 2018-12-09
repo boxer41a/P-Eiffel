@@ -1,0 +1,48 @@
+To compile P-Eiffel
+
+jj_dev:  location of various EiffelStudio sources downloaded from SVN or GIT
+	-- jj_dev
+
+
+1.  Download the eiffel development files to home/jj_dev/18.07_dev:
+	a.  directory "18.07_dev" should not exist yet.
+	b.  this becomes the EIFFEL_DEV directory
+
+cd ~/jj_eiffel
+git clone https://github.com/EiffelSoftware/EiffelStudio.git 18.07_dev
+
+Modify .gitattributes to comment out the line * text=auto
+	-- Why?  I don't remember.
+
+
+
+2.  Fix the two gobo files located at $EIFFEL_DEV/Src/library/gobo (not required for 18.07)
+		a.  gobo_xml.ecf
+		b.  gobo_utility.ecf:
+delete the line:
+<cluster name="override_generated" location="override\generated\library\xml\" recursive="true"/>
+
+
+
+3.  Apply the persistence patch to the development version
+	a.  cd $EIFFEL_DEV/Src
+	b.  patch -p0 < /Users/jjj/jj_dev/auto_persistence_18_07.patch
+
+
+4.  Download Eiffel GPL distribution to home/jj_eiffel/Eiffel_18.07
+	a.  $EIFFEL_PURE = variable name in batch files
+	b.  For compiling the compiler
+	c.  Must be compatible with the development version
+
+
+5.  Copy files in step 4 to a $JJ_EIFFEL/P_Eiffel
+	a.  $P_EIFFEL = variable name in batch files
+	a.  This will become the P-Eiffel distribution after the batch file overwrites some files
+
+
+6.  Run ./build_PEiffel script
+
+
+7.  Run P-Eiffel using script "P_Eiffel"
+	a.  This seta environment variables, etc
+	b.  then calls ec -gui  on the P-Eiffel executable version of Studio

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-13-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-13-0 http://www.eiffel.com/developers/xml/configuration-1-13-0.xsd" name="jj_sha" uuid="6F6F8BB4-E7AD-4890-B1E4-682058DFA62C" library_target="jj_sha">
+	<target name="jj_sha">
+		<root all_classes="true"/>
+		<option void_safety="all"/>
+		<library name="base-safe" location="$ISE_LIBRARY\library\base\base-safe.ecf"/>
+		<cluster name="jj_sha" location=".\" recursive="true">
+			<file_rule>
+					<exclude>/demo$</exclude>
+					<exclude>/docs$</exclude>
+					<exclude>/EIFGENs$</exclude>
+					<exclude>/CVS$</exclude>
+					<exclude>/.svn$</exclude>
+			</file_rule>
+		</cluster>
+	</target>
+</system>

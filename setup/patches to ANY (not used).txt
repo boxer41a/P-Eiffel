@@ -1,0 +1,39 @@
+Index: C/run-time/eif_built_in.h
+===================================================================
+--- C/run-time/eif_built_in.h	(revision 98126)
++++ C/run-time/eif_built_in.h	(working copy)
+@@ -69,6 +69,9 @@
+ #define eif_builtin_ANY_standard_is_equal(some, other)	eequal ((some), (other))
+ #define eif_builtin_ANY_deep_twin(object)				edclone ((object))
+
++#define eif_builtin_ANY_persistence_id(object)			HEADER(object)->ov_head.ovu.ovs.persistence_id
++#define eif_builtin_ANY_set_persistence_id(object,pid)	HEADER(object)->ov_head.ovu.ovs.persistence_id = pid
++
+ /* ARGUMENTS class */
+ #define eif_builtin_ARGUMENTS_32_i_th_argument_pointer(some,i)	(eif_arg_item(i))
+ #define eif_builtin_ARGUMENTS_32_argument_count(some)		(eif_arg_count() - 1)
+
+
+Index: library/base/elks/kernel/any.e
+===================================================================
+--- library/base/elks/kernel/any.e	(revision 98126)
++++ library/base/elks/kernel/any.e	(working copy)
+@@ -16,6 +16,18 @@
+ 
+ feature -- Customization
+ 
++	persistence_id: NATURAL_64
++			-- Return the persistence ID of `Current'.
++		external
++			"built_in"
++		end
++
++	set_persistence_id (a_id: NATURAL_64)
++			-- Set the persistence ID to `a_id'.
++		external
++			"built_in"
++		end
++
+ feature -- Access
+ 
+ 	generator: STRING

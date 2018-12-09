@@ -1,0 +1,248 @@
+Index: C/run-time/eif_auto_persistence.h
+===================================================================
+--- C/run-time/eif_auto_persistence.h	(nonexistent)
++++ C/run-time/eif_auto_persistence.h	(working copy)
+@@ -0,0 +1,27 @@
++
++#ifndef _eif_auto_persistence_h_
++#define _eif_auto_persistence_h_
++#if defined(_MSC_VER) && (_MSC_VER >= 1020)
++#pragma once
++#endif
++
++#include "eif_portable.h"
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++/* Constants for different tasks. */
++#define EIF_AP_DIRTY 1
++#define EIF_AP_QUALIFIED_CALL 2
++#define EIF_AP_CREATION 3
++
++/* Additional code for the automatic persistence framework. */
++RT_LNK void eif_auto_persistence_init (EIF_REFERENCE a_object, EIF_POINTER a_routine);
++RT_LNK void eif_auto_persistence_callback (EIF_REFERENCE a_object, EIF_INTEGER_32 a_task);
++
++#ifdef __cplusplus
++}
++#endif
++
++#endif
+
+Property changes on: C/run-time/eif_auto_persistence.h
+___________________________________________________________________
+Added: svn:eol-style
+## -0,0 +1 ##
++native
+\ No newline at end of property
+Added: svn:keywords
+## -0,0 +1 ##
++Author Date Id Revision
+\ No newline at end of property
+
+Index: C/run-time/eif_eiffel.h
+===================================================================
+--- C/run-time/eif_eiffel.h	(revision 98126)
++++ C/run-time/eif_eiffel.h	(working copy)
+@@ -61,6 +61,7 @@
+
+ #include "eif_macros.h"
+
++#include "eif_auto_persistence.h"
+
+ /* Platform definition */
+
+Index: C/run-time/eif_types.h
+===================================================================
+--- C/run-time/eif_types.h	(revision 98126)
++++ C/run-time/eif_types.h	(working copy)
+@@ -301,6 +301,8 @@
+ 				EIF_TYPE_INDEX dftype;
+ 				uint16 flags;
+ 				EIF_SCP_PID scp_pid; 	/* SCOOP Processor ID to which object belongs */
++				EIF_NATURAL_64 persistence_id;	/* Object persistence ID for automatic persistence. */
++				EIF_NATURAL_64 persistence_id_2;	/* Padding */
+ 			} ovs;
+ 		} ovu;
+ 		rt_uint_ptr ovs_size;
+Index: C/run-time/garcol.c
+===================================================================
+--- C/run-time/garcol.c	(revision 98126)
++++ C/run-time/garcol.c	(working copy)
+@@ -4180,6 +4180,7 @@
+ 	uint16 age;				/* Object's age */
+ 	uint16 flags;				/* Eiffel flags */
+ 	uint16 pid;			/* SCOOP Processor ID */
++	EIF_NATURAL_64 l_persistence_id;
+ 	EIF_TYPE_INDEX dftype, dtype;
+ 	EIF_REFERENCE new;							/* Address of new object (tenured) */
+ 	rt_uint_ptr size;							/* Size of scavenged object */
+@@ -4190,6 +4191,7 @@
+ 	dftype = zone->ov_dftype;
+ 	dtype = zone->ov_dtype;
+ 	pid = zone->ov_pid;
++	l_persistence_id = zone->ov_head.ovu.ovs.persistence_id;
+
+ 	if (gen_scavenge & GS_STOP)			/* Generation scavenging was stopped */
+ 		if (!(flags & EO_NEW))			/* Object inside scavenge zone */
+@@ -4306,6 +4308,7 @@
+ 			zone->ov_dftype = dftype;
+ 			zone->ov_dtype = dtype;
+ 			zone->ov_pid = pid;
++			zone->ov_head.ovu.ovs.persistence_id = l_persistence_id;
+ 			zone->ov_size &= ~B_C;		/* Object is an Eiffel one */
+
+ 			CHECK("Valid size", size <= (zone->ov_size & B_SIZE));
+Index: C/run-time/malloc.c
+===================================================================
+--- C/run-time/malloc.c	(revision 98126)
++++ C/run-time/malloc.c	(working copy)
+@@ -1432,6 +1432,7 @@
+ 		zone->ov_dftype = HEADER(ptr)->ov_dftype;
+ 		zone->ov_dtype = HEADER(ptr)->ov_dtype;
+ 		zone->ov_pid = HEADER(ptr)->ov_pid;
++		zone->ov_head.ovu.ovs.persistence_id = HEADER(ptr)->ov_head.ovu.ovs.persistence_id;
+
+ 			/* Update flags of new object if it contains references and the object is not
+ 			 * in the scavenge zone anymore. */
+@@ -2982,6 +2983,7 @@
+ 		HEADER(zone)->ov_dftype = HEADER(ptr)->ov_dftype;
+ 		HEADER(zone)->ov_dtype = HEADER(ptr)->ov_dtype;
+ 		HEADER(zone)->ov_pid = HEADER(ptr)->ov_pid;
++		HEADER(zone)->ov_head.ovu.ovs.persistence_id = HEADER(ptr)->ov_head.ovu.ovs.persistence_id;
+ 		if (!(gc_flag & GC_FREE)) {		/* Will GC take care of free? */
+ 			eif_rt_xfree(ptr);					/* Free old location */
+ 		} else {
+@@ -3956,6 +3958,7 @@
+ 	if (EIF_IS_EXPANDED_TYPE(System (dtype))) {
+ 		zone->ov_flags |= EO_EXP | EO_REF;
+ 	}
++	zone->ov_head.ovu.ovs.persistence_id = 0LL;
+
+ #ifdef ISE_GC
+ 	if (flags & EO_NEW) {					/* New object outside scavenge zone */
+@@ -4038,6 +4041,8 @@
+  	zone->ov_pid = (EIF_SCP_PID) 0;
+ #endif
+ 	zone->ov_size &= ~B_C;				/* Object is an Eiffel one */
++
++	zone->ov_head.ovu.ovs.persistence_id = 0LL;
+
+ #ifdef ISE_GC
+ 	if (in_scavenge == EIF_FALSE) {
+Index: C/run-time/misc.c
+===================================================================
+--- C/run-time/misc.c	(revision 98126)
++++ C/run-time/misc.c	(working copy)
+@@ -68,6 +68,8 @@
+ #include <ctype.h>			/* For toupper(), is_alpha(), ... */
+ #include <stdio.h>
+
++#include "eif_auto_persistence.h"
++
+ /*
+ doc:	<routine name="eif_pointer_identity" export="public">
+ doc:		<summary>Because of a crash of VC6++ when directly assigning a function pointer to an array of function pointer in a loop, we create this identity function that cannot be inlined and thus prevents the bug to occur. As soon as VC6++ is not supported we can get rid of it. Read comments on ROUT_TABLE.generate_loop_initialization for details.</summary>
+@@ -556,6 +558,51 @@
+ }
+ #endif
+
++/* Variables needed to store the handler object and routine. */
++rt_private EIF_OBJECT eif_auto_persistence_handler = NULL;
++rt_private EIF_PROCEDURE eif_auto_persistence_callback_routine = NULL;
++
++/* Initialize the auto_persistence callback module with the two given arguments. */
++rt_public void eif_auto_persistence_init (EIF_REFERENCE a_object, EIF_POINTER a_routine)
++{
++	EIF_OBJECT l_protected = NULL;
++
++		/* Convert 'a_object' to an EIF_OBJECT indirect reference that is protected by the garbage collector. */
++	if (a_object) {
++		l_protected = eif_protect (a_object);
++	}
++
++		/* Release the old object from the protection (if any). */
++	if (eif_auto_persistence_handler) {
++		eif_wean (eif_auto_persistence_handler);
++	}
++
++		/* Set the new handler object. */
++	eif_auto_persistence_handler = l_protected;
++
++		/* Set the callback function. */
++	eif_auto_persistence_callback_routine = (EIF_PROCEDURE) a_routine;
++}
++
++/* Perform a callback into Eiffel code. */
++rt_public void eif_auto_persistence_callback (EIF_REFERENCE a_object, EIF_INTEGER_32 a_task)
++{
++	if (eif_auto_persistence_handler && eif_auto_persistence_callback_routine) {
++
++			/* Temporarily set the callback routine to NULL.
++			 * That way we can avoid infinite recursion when the callback triggers another callback. */
++		EIF_PROCEDURE l_routine = eif_auto_persistence_callback_routine;
++		eif_auto_persistence_callback_routine = NULL;
++
++			/* Execute the routine */
++		l_routine (eif_access (eif_auto_persistence_handler), a_object, a_task);
++			/* NOTE: After the call to 'eif_auto_persistence_callback_routine', 'a_object' may be invalid. Do not use it any longer. */
++
++			/* Reset the callback routine. */
++		eif_auto_persistence_callback_routine = l_routine;
++	}
++}
++
+ /*
+ doc:</file>
+ */
+Index: Eiffel/eiffel/byte_code/access_b.e
+===================================================================
+--- Eiffel/eiffel/byte_code/access_b.e	(revision 98126)
++++ Eiffel/eiffel/byte_code/access_b.e	(working copy)
+@@ -615,6 +615,19 @@
+ 				buf.put_new_line
+ 				buf.put_character ('}')
+ 			end
++
++			if a_result = Void and a_target.c_type.is_reference and (call_kind = call_kind_creation or call_kind = call_kind_qualified) then
++				buf.put_new_line
++				buf.put_string ("eif_auto_persistence_callback (")
++				a_target.print_register
++				buf.put_two_character (',', ' ')
++				if call_kind = call_kind_qualified then
++					buf.put_string ("EIF_AP_QUALIFIED_CALL")
++				else
++					buf.put_string ("EIF_AP_CREATION")
++				end
++				buf.put_two_character (')', ';')
++			end
+ 		end
+
+ feature -- Conveniences
+Index: Eiffel/eiffel/byte_code/assign_bl.e
+===================================================================
+--- Eiffel/eiffel/byte_code/assign_bl.e	(revision 98126)
++++ Eiffel/eiffel/byte_code/assign_bl.e	(working copy)
+@@ -347,6 +347,11 @@
+ 			else
+ 				generate_assignment
+ 			end
++
++			if not target.is_predefined then
++				buffer.put_new_line
++				buffer.put_string ("eif_auto_persistence_callback (Current, EIF_AP_DIRTY);")
++			end
+ 		end
+
+ 	Simple_assignment: INTEGER = 4
+@@ -725,7 +730,7 @@
+ 		end
+
+ note
+-	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
++	copyright:	"Copyright (c) 1984-2015, Eiffel Software"
+ 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+ 	licensing_options:	"http://www.eiffel.com/licensing"
+ 	copying: "[

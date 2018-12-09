@@ -1,0 +1,190 @@
+# Bash script to set environment variables and then compile the new
+# P-Eiffel (i.e. Persistent Eiffel) compiler.  This file can be copied
+# to and run from the desktop.
+# Execute this file after applying any patches (e.g. patch-4 from
+# Roman) to the Eiffel development library.
+
+
+#!/bin/bash
+
+
+# get the path
+export SAVED_PATH=$PATH
+
+
+# Detect the platform
+OS="`uname`"
+case $OS in
+  'Linux')
+  	export JJ_DEV=/media/sf_jj_dev
+  	export JJ_SOURCE=/meda/sf_jj_source
+  	export JJ_EIFFEL=/Users/jjj/jj_eiffel
+    export ISE_PLATFORM=linus-x86-64
+    export SAY="spd-say"
+    ;;
+  'FreeBSD')
+    ;;
+  'WindowsNT')
+	export JJ_DEV
+	export JJ_SOURCE
+	export JJ_EIFFEL
+	export ISE_PLATFORM
+	export SAY
+    ;;
+  'Darwin')
+    export JJ_GITHUB=/Users/jjj/jj_github
+    export JJ_DEV=/Users/jjj/jj_dev
+    export JJ_SOURCE=/Users/jjj/jj_source
+    export JJ_EIFFEL=/Users/jjj/jj_eiffel
+    export ISE_PLATFORM=macosx-x86-64
+    export SAY="say"
+    ;;
+  'SunOS')
+    ;;
+  'AIX') ;;
+  *) ;;
+esac
+
+
+# Locations of the products
+export JJ_GENS=$JJ_EIFFEL/x_gens
+export P_EIFFEL=$JJ_EIFFEL/P_Eiffel_18.07
+export EIFFEL_PURE=$JJ_EIFFEL/Eiffel_18.07
+export EIFFEL_DEV=$JJ_DEV/18.07_dev
+
+
+# EiffelStudio variables specific to P-Eiffel call
+export ISE_EIFFEL=$EIFFEL_PURE
+export ISE_LIBRARY=$EIFFEL_DEV/Src
+export EIFFEL_SRC=$EIFFEL_DEV/Src
+export ISE_PROJECTS=$JJ_SOURCE
+export ISE_USER_FILES=$JJ_GENS/ise_eiffel/ise_user_files
+export ISE_APP_DATA=$JJ_GENS/ise_eiffel/ise_app_data
+
+
+export ISE_PRECOMP=$ISE_EIFFEL/precomp/spec/$ISE_PLATFORM
+
+export PATH=$ISE_EIFFEL/studio/spec/$ISE_PLATFORM/bin:$SAVED_PATH
+
+
+
+
+# Print variables to allow manual checking.
+echo ""
+echo "JJ_DEV:		$JJ_DEV"
+echo "JJ_SOURCE:	$JJ_SOURCE"
+echo "JJ_EIFFEL:	$JJ_EIFFEL"
+echo ""
+echo "GITHUB:       $GITHUB"
+echo "JJ_GENS:		$JJ_GENS"
+echo ""
+echo "P_EIFFEL:		$P_EIFFEL"
+echo "EIFFEL_PURE:	$EIFFEL_PURE"
+echo "EIFFEL_DEV:	$EIFFEL_DEV"
+echo ""
+echo "ISE_PLATFORM:	$ISE_PLATFORM"
+echo "ISE_EIFFEL:	$ISE_EIFFEL"
+echo "ISE_LIBRARY:	$ISE_LIBRARY"
+echo "EIFFEL_SRC:	$EIFFEL_SRC"
+echo "ISE_PROJECTS:	$ISE_PROJECTS"
+echo "ISE_USER_FILES: $ISE_USER_FILES"
+echo "ISE_APP_DATA:	$ISE_APP_DATA"
+echo "ISE_PRECOMP:	$ISE_PRECOMP"
+echo ""
+echo "PATH:  $PATH"
+echo ""
+echo ""
+
+
+export PATH=$ISE_EIFFEL/studio/spec/$ISE_PLATFORM/bin:$SAVED_PATH
+
+
+
+echo "--------  1.  quick_configure   -----------------------------"
+$SAY "Compiling runtime"
+cd $EIFFEL_SRC/C
+./quick_configure
+$SAY "Runtime compiled"
+echo "--------  2.  quick_configure finished  ---------------------"
+
+echo ""
+echo "--------  3.  Compiling runtime libraries  --------------------------"
+$SAY "Compiling runtime libraries"
+cd $EIFFEL_SRC/library/net/Clib
+$EIFFEL_PURE/studio/spec/$ISE_PLATFORM/bin/finish_freezing -library
+cd $EIFFEL_SRC/library/vision2/Clib
+$EIFFEL_PURE/studio/spec/$ISE_PLATFORM/bin/finish_freezing -library
+cd $EIFFEL_SRC/library/vision2/implementation/gtk/Clib
+$EIFFEL_PURE/studio/spec/$ISE_PLATFORM/bin/finish_freezing -library
+cd $EIFFEL_SRC/library/cURL/Clib
+$EIFFEL_PURE/studio/spec/$ISE_PLATFORM/bin/finish_freezing -library
+$SAY "Run-time libraries compiled"
+echo "--------  4.  Libraires compilations finished   -------------"
+
+
+echo ""
+echo "--------  5.  Copying runtime to P-Eiffel  ------------------"
+$SAY "Copying runtime to P-Eiffel"
+cp $EIFFEL_SRC/C/run-time/eif_*.h $P_EIFFEL/studio/spec/$ISE_PLATFORM/include/
+cp $EIFFEL_SRC/C/run-time/lib* $P_EIFFEL/studio/spec/$ISE_PLATFORM/lib/
+$SAY "Run-time copied to P-Eiffel"
+echo "--------  6.  Runtime copying finished  ---------------------"
+
+
+echo ""
+echo "--------  7.  Compile  --------------------------------------"
+$SAY "Compiling and finalizing bench"
+export ISE_EIFFEL=$P_EIFFEL
+export PATH=$ISE_EIFFEL/studio/spec/$ISE_PLATFORM/bin:$SAVED_PATH
+cd $EIFFEL_SRC/Eiffel/Ace
+#ec -config ec.ecf -target bench -finalize
+$EIFFEL_PURE/studio/spec/$ISE_PLATFORM/bin/ec -config ec.ecf -target bench -finalize
+$SAY "Bench compiled and finalized"
+echo "--------  8.  Compilation finished  -------------------------"
+
+echo ""
+echo "--------  9.  finish_freezing  ------------------------------"
+$SAY "Calling finished_freezing"
+cd EIFGENs/bench/F_code
+finish_freezing
+$SAY "finished_freezing completed"
+echo "--------  10.  finish_freezing  finished --------------------"
+
+
+echo ""
+echo "--------  11.  Moving  ec  to P_Eiffel directory  -----------"
+$SAY "Moving e c to P_Eiffel directory"
+cp ec $P_EIFFEL/studio/spec/$ISE_PLATFORM/bin
+$SAY "Program e c moved to P_Eiffel directory"
+echo "--------  12.  Move finished --------------------------------"
+
+echo ""
+echo "--------  13.  Copy library with support to P-Eiffel  -------"
+$SAY "Copying library to P-Eiffel"
+rm -rf $P_EIFFEL/library
+cp -r $EIFFEL_SRC/library to $P_EIFFEL
+$SAY "Library files copied to P-Eiffel"
+echo "--------  14.  Library files copies to P-Eiffel  ------------"
+
+
+echo ""
+echo "--------  15.  Cleaning development directories  ------------"
+$SAY "Cleaning development directories"
+cd $EIFFEL_DEV/Src/C
+make clobber
+cd $EIFFEL_DEV/Src
+#git reset
+git clean -fdx
+#cd $EIFFEL_DEV/Src/Eiffel/Ace
+#rm -r EIFGENs
+
+
+$SAY "Development directories cleaned"
+echo "--------  16.  Development directories cleaned  -------------"
+
+
+# Restore the path
+export PATH=$SAVED_PATH
+
+echo "--------  17.  Build_PEiffel  -----  Done  ------------------"
+$SAY "P-Eiffel compilation completed"

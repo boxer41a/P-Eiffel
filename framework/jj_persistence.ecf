@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-11-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-11-0 http://www.eiffel.com/developers/xml/configuration-1-11-0.xsd" name="jj_persistence" uuid="3A4528FE-B303-479D-B1EC-D74DE28D8972" library_target="jj_persistence">
+	<target name="jj_persistence">
+		<root all_classes="true"/>
+		<file_rule>
+			<exclude>/\.svn</exclude>
+		</file_rule>
+		<option warning="true" full_class_checking="false" is_attached_by_default="true" void_safety="all">
+		</option>
+		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf"/>
+		<library name="net" location="$ISE_LIBRARY\library\net\net-safe.ecf"/>
+		<library name="zmq" location="$ISE_LIBRARY\library\zeromq\zmq.ecf"/>
+		<library name="jj_temporal" location="$JJ_GITHUB\jj_temporal\jj_temporal.ecf"/>
+<!--		<library name="jj_containers" location="$JJ_SOURCE\jj_containers\jj_containers.ecf"/>
+		<library name="jj_support" location="$JJ_SOURCE\jj_support\jj_support.ecf" readonly="false"/>
+-->
+	<cluster name="jj_persistence" location=".\" recursive="true">
+			<file_rule>
+				<exclude>/tests$</exclude>
+			</file_rule>
+		</cluster>
+	</target>
+</system>

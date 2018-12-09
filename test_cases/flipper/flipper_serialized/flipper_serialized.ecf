@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-15-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-15-0 http://www.eiffel.com/developers/xml/configuration-1-15-0.xsd" name="flipper_serialized" uuid="EAEB8D51-6234-4CB6-85B0-49A1511DC475">
+	<target name="flipper_serialized">
+		<root class="FLIPPER_APPLICATION" feature="make_and_launch"/>
+		<option warning="true" full_class_checking="false" cat_call_detection="none" is_attached_by_default="true" is_obsolete_routine_type="true" void_safety="all" syntax="standard">
+			<assertions precondition="true" postcondition="true" supplier_precondition="true"/>
+		</option>
+		<setting name="automatic_backup" value="true"/>
+		<precompile name="vision2_pre" location="$ISE_PRECOMP\vision2-safe.ecf"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf">
+			<option is_obsolete_routine_type="true">
+				<assertions precondition="true"/>
+			</option>
+		</library>
+		<library name="jj_temporal" location="$GITHUB\jj_temporal\jj_temporal.ecf"/>
+		<library name="jj_vision" location="$JJ_SOURCE\jj_vision\jj_vision.ecf" readonly="false" use_application_options="true">
+			<option is_obsolete_routine_type="true">
+				<assertions precondition="true" supplier_precondition="true"/>
+			</option>
+		</library>
+		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2-safe.ecf" readonly="false">
+			<option is_obsolete_routine_type="true">
+				<assertions/>
+			</option>
+		</library>
+		<cluster name="common" location="..\common\" recursive="true"/>
+		<cluster name="flipper" location=".\" recursive="true">
+			<file_rule>
+				<exclude>/.svn$</exclude>
+				<exclude>/CVS$</exclude>
+				<exclude>/EIFGENs$</exclude>
+				<exclude>/jj_tracer$</exclude>
+			</file_rule>
+		</cluster>
+	</target>
+</system>
