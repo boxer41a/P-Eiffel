@@ -17,7 +17,7 @@ OS="`uname`"
 case $OS in
   'Linux')
   	export JJ_DEV=/media/sf_jj_dev
-  	export JJ_SOURCE=/meda/sf_jj_source
+  	export JJ_SOURCE=/media/sf_jj_source
   	export JJ_EIFFEL=/Users/jjj/jj_eiffel
     export ISE_PLATFORM=linus-x86-64
     export SAY="spd-say"
@@ -48,9 +48,9 @@ esac
 
 # Locations of the products
 export JJ_GENS=$JJ_EIFFEL/x_gens
-export P_EIFFEL=$JJ_EIFFEL/P_Eiffel_18.07
-export EIFFEL_PURE=$JJ_EIFFEL/Eiffel_18.07
-export EIFFEL_DEV=$JJ_DEV/18.07_dev
+export P_EIFFEL=$JJ_EIFFEL/P_Eiffel_20.05
+export EIFFEL_PURE=$JJ_EIFFEL/Eiffel_20.05
+export EIFFEL_DEV=$JJ_DEV/20.05_dev
 
 
 # EiffelStudio variables specific to P-Eiffel call
@@ -71,16 +71,17 @@ export PATH=$ISE_EIFFEL/studio/spec/$ISE_PLATFORM/bin:$SAVED_PATH
 
 # Print variables to allow manual checking.
 echo ""
-echo "JJ_DEV:		$JJ_DEV"
-echo "JJ_SOURCE:	$JJ_SOURCE"
-echo "JJ_EIFFEL:	$JJ_EIFFEL"
+echo " SAVED_PATH:	$SAVED_PATH"
+echo "     JJ_DEV:	$JJ_DEV"
+echo "  JJ_SOURCE:	$JJ_SOURCE"
+echo "  JJ_EIFFEL:	$JJ_EIFFEL"
 echo ""
-echo "GITHUB:       $GITHUB"
-echo "JJ_GENS:		$JJ_GENS"
+echo "  JJ_GITHUB:	$JJ_GITHUB"
+echo "    JJ_GENS:	$JJ_GENS"
 echo ""
-echo "P_EIFFEL:		$P_EIFFEL"
+echo "   P_EIFFEL:	$P_EIFFEL"
 echo "EIFFEL_PURE:	$EIFFEL_PURE"
-echo "EIFFEL_DEV:	$EIFFEL_DEV"
+echo " EIFFEL_DEV:	$EIFFEL_DEV"
 echo ""
 echo "ISE_PLATFORM:	$ISE_PLATFORM"
 echo "ISE_EIFFEL:	$ISE_EIFFEL"

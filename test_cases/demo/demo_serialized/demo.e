@@ -334,7 +334,7 @@ feature -- constants
 
 feature {NONE} -- Implementation
 
-	step_actions: HASH_TABLE [TUPLE [action: PROCEDURE [ANY, TUPLE];
+	step_actions: HASH_TABLE [TUPLE [action: PROCEDURE;
 								pre_message: STRING_8; post_message: STRING_8],
 								INTEGER]
 			-- Procedures to be executed at a particular `step' (the key) and

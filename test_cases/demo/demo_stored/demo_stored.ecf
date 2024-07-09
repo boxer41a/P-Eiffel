@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-15-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-15-0 http://www.eiffel.com/developers/xml/configuration-1-15-0.xsd" name="demo_stored" uuid="2DD618B5-CCDC-456C-B923-596FFCB170CE">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-21-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-21-0 http://www.eiffel.com/developers/xml/configuration-1-21-0.xsd" name="demo_stored" uuid="2DD618B5-CCDC-456C-B923-596FFCB170CE">
 	<target name="demo_stored">
 		<root class="DEMO" feature="execute_all"/>
-		<option warning="true" is_obsolete_routine_type="true" void_safety="all" syntax="standard">
+		<option warning="warning" syntax="standard" manifest_array_type="mismatch_warning">
 			<assertions precondition="true" postcondition="true" check="true" loop="true" supplier_precondition="true"/>
 		</option>
 		<setting name="console_application" value="true"/>
+		<setting name="total_order_on_reals" value="false"/>
+		<setting name="dead_code_removal" value="feature"/>
+		<capability>
+			<concurrency support="none"/>
+			<void_safety support="all" use="all"/>
+		</capability>
 		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf" readonly="true">
 			<option>
 				<assertions precondition="true" postcondition="true" check="true"/>

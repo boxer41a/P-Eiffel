@@ -99,7 +99,7 @@ Index: C/run-time/malloc.c
 ===================================================================
 --- C/run-time/malloc.c	(revision 98126)
 +++ C/run-time/malloc.c	(working copy)
-@@ -1445,6 +1445,7 @@
+@@ -1469,6 +1469,7 @@
  		zone->ov_dftype = HEADER(ptr)->ov_dftype;
  		zone->ov_dtype = HEADER(ptr)->ov_dtype;
  		zone->ov_pid = HEADER(ptr)->ov_pid;
@@ -107,7 +107,7 @@ Index: C/run-time/malloc.c
 
  			/* Update flags of new object if it contains references and the object is not
  			 * in the scavenge zone anymore. */
-@@ -2995,6 +2996,7 @@
+@@ -3019,6 +3020,7 @@
  		HEADER(zone)->ov_dftype = HEADER(ptr)->ov_dftype;
  		HEADER(zone)->ov_dtype = HEADER(ptr)->ov_dtype;
  		HEADER(zone)->ov_pid = HEADER(ptr)->ov_pid;
@@ -115,7 +115,7 @@ Index: C/run-time/malloc.c
  		if (!(gc_flag & GC_FREE)) {		/* Will GC take care of free? */
  			eif_rt_xfree(ptr);					/* Free old location */
  		} else {
-@@ -3969,6 +3971,7 @@
+@@ -3993,6 +3995,7 @@
  	if (EIF_IS_EXPANDED_TYPE(System (dtype))) {
  		zone->ov_flags |= EO_EXP | EO_REF;
  	}
@@ -123,7 +123,7 @@ Index: C/run-time/malloc.c
 
  #ifdef ISE_GC
  	if (flags & EO_NEW) {					/* New object outside scavenge zone */
-@@ -4051,6 +4054,8 @@
+@@ -4075,6 +4078,8 @@
   	zone->ov_pid = (EIF_SCP_PID) 0;
  #endif
  	zone->ov_size &= ~B_C;				/* Object is an Eiffel one */
@@ -201,7 +201,7 @@ Index: Eiffel/eiffel/byte_code/access_b.e
 ===================================================================
 --- Eiffel/eiffel/byte_code/access_b.e	(revision 98126)
 +++ Eiffel/eiffel/byte_code/access_b.e	(working copy)
-@@ -521,6 +521,19 @@
+@@ -562,6 +562,19 @@
  				buf.put_new_line
  				buf.put_character ('}')
  			end
@@ -220,12 +220,12 @@ Index: Eiffel/eiffel/byte_code/access_b.e
 +			end
  		end
 
- feature -- Conveniences
+ feature {REGISTRABLE} -- C code generation
 Index: Eiffel/eiffel/byte_code/assign_bl.e
 ===================================================================
 --- Eiffel/eiffel/byte_code/assign_bl.e	(revision 98126)
 +++ Eiffel/eiffel/byte_code/assign_bl.e	(working copy)
-@@ -342,6 +342,11 @@
+@@ -338,6 +338,11 @@
  			else
  				generate_assignment
  			end
@@ -237,3 +237,4 @@ Index: Eiffel/eiffel/byte_code/assign_bl.e
  		end
 
  	Simple_assignment: INTEGER = 4
+

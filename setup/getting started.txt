@@ -26,10 +26,10 @@ delete the line:
 
 3.  Apply the persistence patch to the development version
 	a.  cd $EIFFEL_DEV/Src
-	b.  patch -p0 < /Users/jjj/jj_dev/auto_persistence_18_07.patch
+	b.  patch -p0 < /Users/jjj/jj_dev/auto_persistence_20_05.patch
 
 
-4.  Download Eiffel GPL distribution to home/jj_eiffel/Eiffel_18.07
+4.  Download Eiffel GPL distribution to home/jj_eiffel/Eiffel_18.07  (or ...Eiffel_20.05)
 	a.  $EIFFEL_PURE = variable name in batch files
 	b.  For compiling the compiler
 	c.  Must be compatible with the development version
@@ -44,5 +44,5 @@ delete the line:
 
 
 7.  Run P-Eiffel using script "P_Eiffel"
-	a.  This seta environment variables, etc
+	a.  This sets environment variables, etc
 	b.  then calls ec -gui  on the P-Eiffel executable version of Studio
